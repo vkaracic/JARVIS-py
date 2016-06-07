@@ -131,4 +131,5 @@ class Search(APIView):
                 'tweet': parse_tweet(result['text'])
             })
         save_to_csv(filename, data)
-        return Response()
+        response_text = 'Saved {} objects.'.format(results['search_metadata']['count'])
+        return Response(response_text)
