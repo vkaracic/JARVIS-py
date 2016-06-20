@@ -83,7 +83,7 @@ class Listener(StreamListener):
         print status
 
 
-class Stream(APIView):
+class Streaming(APIView):
     """ API endpoint for retrieving data from Twitter stream. """
 
     def get(self, request, *args, **kwargs):
