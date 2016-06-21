@@ -128,10 +128,6 @@ TWITTER_CONSUMER_SECRET = 'set-me'
 TWITTER_ACCESS_TOKEN = 'set-me'
 TWITTER_ACCESS_TOKEN_SECRET = 'set-me'
 
-INSTAGRAM_CLIENT_ID = 'set-me'
-INSTAGRAM_CLIENT_SECRET = 'set-me'
-INSTAGRAM_ACCESS_TOKEN = 'set-me'
-
 # Local overrides.
 if os.path.isfile(join(dirname(abspath(__file__)), 'private.py')):
     from .private import *
