@@ -1,6 +1,7 @@
 import csv
 from datetime import datetime
 import json
+import re
 
 from django.conf import settings
 from tweepy import API
@@ -26,8 +27,16 @@ def twitter_auth():
 
 
 def parse_tweet(string):
-    """ Ignore special, non-ascii characters in tweets. """
-    return unicode(string).encode('ascii', 'ignore')
+    """
+    Ignore special, non-ascii characters in tweets. 
+    Remove retweets and URL links.
+    """
+    ascii_filtered = unicode(string).encode('ascii', 'ignore')
+    rt_p = re.compile(r'@[\w\d]+:?')
+    url_p = re.compile(r'http[s]?:\/\/[\w\d\.\-_\/]+')
+    no_rt = re.sub(rt_p, '', ascii_filtered)
+    no_url = re.sub(url_p, '', no_rt)
+    return no_url.replace('RT', '')
 
 
 def save_to_csv(filename, data):
@@ -36,7 +45,9 @@ def save_to_csv(filename, data):
     The delimiter is tab because commas are common in tweets.
     """
     with open(filename, 'wb') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=['user', 'tweet'], delimiter='\t')
+        writer = csv.DictWriter(
+            csvfile, fieldnames=['user', 'tweet'], delimiter='\t'
+        )
         writer.writeheader()
         for item in data:
             try:
@@ -48,10 +59,10 @@ def save_to_csv(filename, data):
 class Listener(StreamListener):
     """
     Twitter listener.
-    Classifies most common Twitter messages and routes to appropriately named methods.
+    Classifies most common Twitter messages and routes to appropriately
+    named methods.
     """
-    def __init__(self, keyword, limit, api=None):
-        super(Listener, self).__init__(api=api)
+    def __init__(self, keyword, limit):
         self.keyword = keyword
         self.limit = limit
         self.count = 0
@@ -65,7 +76,9 @@ class Listener(StreamListener):
         """
         self.count += 1
         if self.count > int(self.limit):
-            filename = 'stream_{}_{}.csv'.format(self.keyword, datetime.now().isoformat())
+            filename = 'stream_{}_{}.csv'.format(
+                self.keyword, datetime.now().isoformat()
+            )
             save_to_csv(filename, self.collection)
             return False
 
@@ -96,10 +109,12 @@ class Streaming(APIView):
         keyword = request.GET.get('keyword')
         limit = request.GET.get('limit')
 
-        # Establishes a streaming session and routes messages to Listener instance.
+        # Establishes a streaming session and routes messages
+        # to Listener instance.
         auth = twitter_auth()
+
         twitter_stream = Stream(auth, Listener(keyword, limit))
-        twitter_stream.keyword(track=[keyword])
+        twitter_stream.filter(track=[keyword])
 
         return Response()
 
@@ -124,12 +139,16 @@ class Search(APIView):
         api = API(auth, parser=JSONParser())
         data = []
         results = api.search(q=keyword, count=count)
-        filename = 'search_{}_{}.csv'.format(keyword, datetime.now().isoformat())
+        filename = 'search_{}_{}.csv'.format(
+            keyword, datetime.now().isoformat()
+        )
         for result in results['statuses']:
             data.append({
                 'user': parse_tweet(result['user']['name']),
                 'tweet': parse_tweet(result['text'])
             })
         save_to_csv(filename, data)
-        response_text = 'Saved {} objects.'.format(results['search_metadata']['count'])
+        response_text = 'Saved {} objects.'.format(
+            results['search_metadata']['count']
+        )
         return Response(response_text)
