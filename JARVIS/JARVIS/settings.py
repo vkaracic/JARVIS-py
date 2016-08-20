@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'api',
     'jsapp',
+    'tf',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -125,7 +126,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    join(BASE_DIR, 'static')
+    join(BASE_DIR, 'static'),
 ]
 
 TWITTER_CONSUMER_KEY = 'set-me'
