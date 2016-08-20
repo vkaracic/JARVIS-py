@@ -198,10 +198,7 @@ $('button.test-network').click(function() {
     values = row.split(',');
     if (values.length > dataRowLen + 1)
       throw 'Inconsistent testing data!';
-    console.log(values);
     output = nn.activate(_.first(values, inputNum));
-    console.log(nn);
-    console.log(output);
     _.each(output, function(val, i) {
         variance.push(Math.abs(values[inputNum + i] - val));
     });
