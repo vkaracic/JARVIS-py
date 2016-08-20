@@ -20,7 +20,10 @@ class ModelDetailsView(RetrieveUpdateDestroyAPIView, CreateAPIView):
 
     def post(self, request, pk):
         model = TFModel.objects.get(id=pk)
-        return Response("TODO")
+        # Must be list of lists
+        predict_data = json.loads(request.POST.get('predict_data'))
+        prediction = model.predict(predict_data)
+        return Response(prediction)
 
 
 class ModelTrainView(APIView):

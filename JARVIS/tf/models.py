@@ -133,7 +133,7 @@ class TFModel(models.Model):
         output_layer = tf.add(tf.matmul(input_layer, weights['out']), biases['out'])
         cost_function = self.get_cost_function(output_layer, output_data)
         optimizer_obj = self.get_optimizer(cost_function)
-        return input_data, output_data, cost_function, optimizer_obj
+        return output_layer, input_data, output_data, cost_function, optimizer_obj
 
     def train(self, training_data, min_error=None, iterations=100000):
         inputs = []
@@ -144,7 +144,7 @@ class TFModel(models.Model):
         inputs = np.array(inputs)
         outputs = np.array(outputs)
 
-        x, y, cost, optimizer = self.create_network()
+        _, x, y, cost, optimizer = self.create_network()
         saver = tf.train.Saver()
         with tf.Session() as sess:
             sess.run(tf.initialize_all_variables())
@@ -168,3 +168,12 @@ class TFModel(models.Model):
                 self.file_path = file_path
                 self.trained = True
                 self.save()
+
+    def predict(self, inputs):
+        np_input = np.array(inputs)
+        out, x, y, cost, optimizer = self.create_network()
+        saver = tf.train.Saver()
+        with tf.Session() as sess:
+            saver.restore(sess, self.file_path)
+            output = sess.run(out, feed_dict={x: np_input})
+        return output.tolist()
