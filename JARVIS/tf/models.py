@@ -114,6 +114,10 @@ class TFModel(models.Model):
             )))
 
     def create_network(self):
+        """Creates the network with saved parameters.
+
+        Currently only one hidden layer is supported.
+        """
         input_data = tf.placeholder(tf.float32, shape=[None, self.num_inputs])
         output_data = tf.placeholder(tf.float32, shape=[None, self.num_outputs])
 
@@ -136,6 +140,22 @@ class TFModel(models.Model):
         return output_layer, input_data, output_data, cost_function, optimizer_obj
 
     def train(self, training_data, min_error=None, iterations=100000):
+        """Trains the network.
+
+        If there is a file path saved for the model, which means the network
+        has already done some training, it will load that file and continue to
+        train the loaded model.
+        After the training is complete, the model will be saved in:
+            /saved_models/<model_id>.cpkt
+
+        Args:
+            training_data (list): A Python list containing lists each of which
+                contains a list with input data, and a list with output data.
+            min_error (float): The minimal error for which when the network
+                reaches it, it stops the training.
+            iterations (int): Number of iterations for how long the network will
+                train.
+        """
         inputs = []
         outputs = []
         for data in training_data:
@@ -170,8 +190,16 @@ class TFModel(models.Model):
                 self.save()
 
     def predict(self, inputs):
+        """Runs a prediction for the current model.
+
+        Args:
+            inputs (list): A list containing lists which contain input values.
+
+        Returns:
+            A list of lists each containing the output value for each input.
+        """
         np_input = np.array(inputs)
-        out, x, y, cost, optimizer = self.create_network()
+        out, x, _, _, _ = self.create_network()
         saver = tf.train.Saver()
         with tf.Session() as sess:
             saver.restore(sess, self.file_path)

@@ -10,11 +10,29 @@ from tf.models import TFModel
 
 
 class ModelListCreateView(ListCreateAPIView):
+    """TFModel list endpoint.
+
+    Methods:
+        GET: Lists all the TFModels
+        POST: Creates a new TFModel
+    """
     queryset = TFModel.objects.all()
     serializer_class = TFModelSerializer
 
 
 class ModelDetailsView(RetrieveUpdateDestroyAPIView, CreateAPIView):
+    """Endpoint for individual TFModels.
+
+    Methods:
+        GET: Show the details of the TFModel.
+        POST: Run a prediction with the TFModel.
+            args:
+                - predict_data: List of lists containing input values for
+                    the model
+        PUT: Update the complete TFModel.
+        PATCH: Partically update the TFModel.
+        DELETE: Delete the TFModel.
+    """
     serializer_class = TFModelSerializer
     queryset = TFModel.objects.all()
 
@@ -27,6 +45,17 @@ class ModelDetailsView(RetrieveUpdateDestroyAPIView, CreateAPIView):
 
 
 class ModelTrainView(APIView):
+    """Endpoint for training a TFModel.
+
+    Methods:
+        POST: Runs the training of the TFModel.
+            args:
+                - training_data (list): List of inputs matched with the target outputs.
+                    For example XOR training data would look like:
+                        [[[0, 0],[0]],[[0, 1],[1]],[[1, 0],[1]],[[1, 1],[0]]]
+                - min_error (float): Minimum error.
+                - iterations (int): Number of iterations.
+    """
     serializer_class = TFModelSerializer
     queryset = TFModel.objects.all()
 
