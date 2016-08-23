@@ -22,6 +22,7 @@ class TFModel(models.Model):
     optimizer = models.CharField(max_length=255)
     activation = models.CharField(max_length=255)
     trained = models.BooleanField(default=False)
+    latest_cost = models.FloatField(blank=True, null=True)
 
     def generate_file_path(self):
         """Generate a file path to a new model file.
@@ -180,6 +181,7 @@ class TFModel(models.Model):
                 if i % 5000 == 0:
                     print '{}, {}'.format(i, c)
 
+            self.latest_cost = c
             file_path = self.file_path or self.generate_file_path()
             saver.save(sess, file_path)
             print 'model saved in: ', file_path
