@@ -176,10 +176,10 @@ class TFModel(models.Model):
                     [optimizer, cost],
                     feed_dict={x: inputs, y: outputs}
                 )
-                if min_error and c < min_error:
-                    break
                 if i % 5000 == 0:
                     print '{}, {}'.format(i, c)
+                if min_error and c < min_error:
+                    break
 
             self.latest_cost = c
             file_path = self.file_path or self.generate_file_path()
