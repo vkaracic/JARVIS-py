@@ -24,34 +24,49 @@ class Queue(models.Model):
     def delete(self, *args, **kwargs):
         pass
 
+    def _start(self, next_task):
+        next_task.start()
+        if self.timeout:
+            time.sleep(self.timeout)
+        self.start_next()
+
     def start_next(self):
         if not self.pause:
+            # If the last three tasks errored then there is a bigger problem
+            # and the execution should not continue.
+            last_statuses = Task.objects.all().reverse()[:3].values_list(
+                'status', flat=True
+            )
+            if sum(last_statuses) == 9:
+                return False
             next_task = Task.objects.filter(status=0).first()
             if not Task.objects.filter(status=1).exists() and next_task:
-                next_task.start()
-                if self.timeout:
-                    time.sleep(self.timeout)
-                self.start_next()
+                self._start(next_task)
 
 
 class Task(models.Model):
     STATUS_CHOICES = (
         (0, 'WAITING'),
         (1, 'RUNNING'),
-        (2, 'DONE')
+        (2, 'DONE'),
+        (3, 'ERROR'),
     )
     priority = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
-    model = models.OneToOneField('tf.TFModel')
+    model = models.ForeignKey('tf.TFModel')
     training_data_csv_name = models.CharField(max_length=255, blank=True, null=True)
     min_error = models.FloatField(null=True, blank=True)
     iterations = models.PositiveIntegerField(null=True, blank=True)
     status = models.IntegerField(default=0, choices=STATUS_CHOICES)
+    error = models.TextField()
 
     class Meta(object):
         ordering = ['created_at', 'priority']
+
+    def __str__(self):
+        return '{}, status: {}'.format(self.id, self.status)
 
     def load_training_data_csv(self):
         file_path = path.join(
@@ -71,11 +86,16 @@ class Task(models.Model):
         training_data = self.load_training_data_csv()
         self.status = 1
         self.save()
-        self.model.train(training_data, self.min_error, self.iterations)
-        self.status = 2
+        try:
+            self.model.train(training_data, self.min_error, self.iterations)
+            self.status = 2
+        except Exception as ex:
+            self.error = ex
+            self.status = 3
+            self.save()
         self.finished_at = pytz.utc.localize(datetime.now())
         self.save()
-        if self.model.trained:
+        if self.status == 2:
             print 'Task [%s] finished in [%s]!' % (
                 self.id,
                 self.finished_at - self.started_at
