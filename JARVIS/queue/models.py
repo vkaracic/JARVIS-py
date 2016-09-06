@@ -76,8 +76,8 @@ class Task(models.Model):
         with open(file_path, 'r') as f:
             data = []
             for row in csv.reader(f):
-                input_data = map(int, row[:self.model.num_inputs])
-                output_data = map(int, row[self.model.num_inputs:])
+                input_data = map(float, row[:self.model.num_inputs])
+                output_data = map(float, row[self.model.num_inputs:])
                 data.append([input_data, output_data])
         return data
 

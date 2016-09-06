@@ -10,18 +10,18 @@ from tf.models import TFModel
 from queue.models import Task, Queue
 
 
-class ModelListCreateView(ListCreateAPIView):
+class PrivateModelListCreateView(ListCreateAPIView):
     """TFModel list endpoint.
 
     Methods:
         GET: Lists all the TFModels
         POST: Creates a new TFModel
     """
-    queryset = TFModel.objects.all()
+    queryset = TFModel.objects.filter(permission_type=0)
     serializer_class = TFModelSerializer
 
 
-class ModelDetailsView(RetrieveUpdateDestroyAPIView, CreateAPIView):
+class PrivateModelDetailsView(RetrieveUpdateDestroyAPIView, CreateAPIView):
     """Endpoint for individual TFModels.
 
     Methods:
@@ -35,17 +35,17 @@ class ModelDetailsView(RetrieveUpdateDestroyAPIView, CreateAPIView):
         DELETE: Delete the TFModel.
     """
     serializer_class = TFModelSerializer
-    queryset = TFModel.objects.all()
+    queryset = TFModel.objects.filter(permission_type=0)
 
     def post(self, request, pk):
-        model = TFModel.objects.get(id=pk)
+        model = TFModel.objects.get(id=pk, permission_type=0)
         # Must be list of lists
         input_data = json.loads(request.POST.get('input_data'))
         inference = model.infer(input_data)
         return Response(inference)
 
 
-class ModelTrainView(APIView):
+class PrivateModelTrainView(APIView):
     """Endpoint for training a TFModel.
 
     Methods:
@@ -59,14 +59,14 @@ class ModelTrainView(APIView):
                 - iterations (int): Number of iterations.
     """
     serializer_class = TFModelSerializer
-    queryset = TFModel.objects.all()
+    queryset = TFModel.objects.filter(permission_type=0)
 
     def post(self, request, pk):
         err_data = request.POST.get('min_error')
         iter_data = request.POST.get('iterations')
         min_error = float(err_data) if err_data else None
         iterations = int(iter_data) if iter_data else 100000
-        model = TFModel.objects.get(id=pk)
+        model = TFModel.objects.get(id=pk, permission_type=0)
 
         if settings.QUEUE:
             training_data_csv_name = request.POST.get('training_data_csv_name')

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'jsapp',
     'tf',
     'queue',
+    'users',
 ]
 
 MIDDLEWARE_CLASSES = [

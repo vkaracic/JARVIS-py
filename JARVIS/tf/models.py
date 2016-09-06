@@ -10,6 +10,11 @@ import tensorflow as tf
 
 
 class TFModel(models.Model):
+    PERMISSION_TYPES = (
+        (0, 'Free use'),
+        (1, 'Single user'),
+        (2, 'Team')
+    )
     external_id = models.UUIDField(default=uuid.uuid4, unique=True)
     file_path = models.FilePathField(blank=True, null=True)
     num_inputs = models.PositiveIntegerField()
@@ -23,6 +28,10 @@ class TFModel(models.Model):
     activation = models.CharField(max_length=255)
     trained = models.BooleanField(default=False)
     latest_cost = models.FloatField(blank=True, null=True)
+
+    permission_type = models.IntegerField(default=0, choices=PERMISSION_TYPES)
+    permitted_user = models.ForeignKey('users.ExtendedUser', blank=True, null=True)
+    permitted_team = models.ForeignKey('users.Team', blank=True, null=True)
 
     def generate_file_path(self):
         """Generate a file path to a new model file.
