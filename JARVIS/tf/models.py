@@ -191,8 +191,8 @@ class TFModel(models.Model):
                 self.trained = True
                 self.save()
 
-    def predict(self, inputs):
-        """Runs a prediction for the current model.
+    def infer(self, inputs):
+        """Infers the output of the current model based on the input.
 
         Args:
             inputs (list): A list containing lists which contain input values.

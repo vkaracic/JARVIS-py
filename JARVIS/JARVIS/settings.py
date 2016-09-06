@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'api',
     'jsapp',
     'tf',
+    'queue',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -133,6 +134,8 @@ TWITTER_CONSUMER_KEY = 'set-me'
 TWITTER_CONSUMER_SECRET = 'set-me'
 TWITTER_ACCESS_TOKEN = 'set-me'
 TWITTER_ACCESS_TOKEN_SECRET = 'set-me'
+
+QUEUE = True
 
 # Local overrides.
 if os.path.isfile(join(dirname(abspath(__file__)), 'private.py')):
