@@ -1,6 +1,5 @@
 import json
 
-from rest_framework.decorators import detail_route
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
@@ -65,7 +64,7 @@ class ModelTrainView(APIView):
         iter_data = request.POST.get('iterations')
 
         min_error = float(err_data) if err_data else None
-        iterations = float(iter_data) if iter_data else 100000
+        iterations = int(iter_data) if iter_data else 100000
 
         model = TFModel.objects.get(id=pk)
         model.train(training_data, min_error, iterations)

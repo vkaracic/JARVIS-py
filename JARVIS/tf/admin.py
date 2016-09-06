@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from tf.models import TFModel
+
+
+admin.site.register(TFModel)
