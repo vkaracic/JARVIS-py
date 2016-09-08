@@ -1,3 +1,4 @@
+"""API endpoints for free use TFModels."""
 import json
 
 from django.conf import settings
@@ -14,8 +15,8 @@ class ModelListCreateView(ListCreateAPIView):
     """TFModel list endpoint.
 
     Methods:
-        GET: Lists all the TFModels
-        POST: Creates a new TFModel
+        GET: Lists all the TFModels which are free use
+        POST: Creates a new free use TFModel
     """
     queryset = TFModel.objects.filter(permission_type=0)
     serializer_class = TFModelSerializer
@@ -38,6 +39,7 @@ class ModelDetailsView(RetrieveUpdateDestroyAPIView, CreateAPIView):
     queryset = TFModel.objects.filter(permission_type=0)
 
     def post(self, request, pk):
+        """Runs an inference with the TFModel and return the results."""
         model = TFModel.objects.get(id=pk, permission_type=0)
         # Must be list of lists
         input_data = json.loads(request.POST.get('input_data'))
@@ -54,7 +56,7 @@ class ModelTrainView(APIView):
                 - training_data (list): List of inputs matched with the target outputs.
                     For example XOR training data would look like:
                         [[[0, 0],[0]],[[0, 1],[1]],[[1, 0],[1]],[[1, 1],[0]]]
-                - training_data_csv_name: Name of training dataset file. Used for queued training.
+                - training_data_csv_name: Name of training dataset file.
                 - min_error (float): Minimum error.
                 - iterations (int): Number of iterations.
     """
@@ -62,14 +64,15 @@ class ModelTrainView(APIView):
     queryset = TFModel.objects.filter(permission_type=0)
 
     def post(self, request, pk):
+        """Runs the training of the TFModel."""
         err_data = request.POST.get('min_error')
         iter_data = request.POST.get('iterations')
         min_error = float(err_data) if err_data else None
         iterations = int(iter_data) if iter_data else 100000
+        training_data_csv_name = request.POST.get('training_data_csv_name')
         model = TFModel.objects.get(id=pk, permission_type=0)
 
         if settings.QUEUE:
-            training_data_csv_name = request.POST.get('training_data_csv_name')
             Task.objects.create(
                 model=model,
                 training_data_csv_name=training_data_csv_name,

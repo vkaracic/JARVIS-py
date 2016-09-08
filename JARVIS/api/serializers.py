@@ -1,3 +1,4 @@
+"""Serializers for model data."""
 from rest_framework import serializers
 
 from tf.models import TFModel

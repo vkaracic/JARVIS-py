@@ -1,3 +1,4 @@
+"""API endpoint for listing tasks."""
 from rest_framework.generics import ListCreateAPIView
 
 from api.serializers import TaskSerializer
