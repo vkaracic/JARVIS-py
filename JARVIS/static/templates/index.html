@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+<div class="row">
+    <div class="sidebar col-md-2">
+        <div class="user-info">
+            <span class="username">{{ username }}</span>
+            <span class="email">{{ email }}</span>
+            <a href="{% url 'logout' %}" class="logout">LOGOUT</a>
+        </div>
+        <div class="action-links">
+            <ul>
+                <li><a href="/#queue">QUEUE</a></li>
+                <li><a href="/#models">MODELS</a></li>
+                <li><a href="#">TEAM</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="main-content col-md-10">
+
+    </div>
+</div>
+{% endblock content %}
+
+
+{% block javascript %}
+<script src="{% static 'js/apps/index.js' %}"></script>
+{% endblock javascript %}

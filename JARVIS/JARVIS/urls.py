@@ -15,12 +15,15 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
+from django.core.urlresolvers import reverse_lazy
 
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include('api.urls', namespace='api')),
     url(r'^js/', include('jsapp.urls', namespace='jsapp')),
-    url(r'^homepage/', include('homepage.urls', namespace='homepage')),
-    url(r'^', include('django.contrib.auth.urls')),
+    url(r'^login/$', auth_views.login, {'template_name': 'templates/login.html'}, name='login'),
+    url(r'^logout/$', auth_views.logout, {'next_page': reverse_lazy('homepage:index')}, name='logout'),
+    url(r'^', include('homepage.urls', namespace='homepage')),
 ]

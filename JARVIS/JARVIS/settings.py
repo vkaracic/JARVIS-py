@@ -125,11 +125,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
+STATIC_ROOT = ''
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     join(BASE_DIR, 'static'),
 ]
+
+LOGIN_REDIRECT_URL = 'homepage:index'
+LOGIN_URL = 'login'
 
 TWITTER_CONSUMER_KEY = 'set-me'
 TWITTER_CONSUMER_SECRET = 'set-me'

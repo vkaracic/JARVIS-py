@@ -25,6 +25,8 @@ def user_specific_qs(user):
     Returns:
         Queryset of TF models that match the filter.
     """
+    print "#" * 50
+    print user
     ext_user = ExtendedUser.objects.get(user=user)
     public = Q(permission_type=0)
     single_use = Q(permission_type=1, permitted_user=ext_user)
