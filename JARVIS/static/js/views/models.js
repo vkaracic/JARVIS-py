@@ -22,12 +22,20 @@ define([
             },
 
             initialize: function() {
+                $('.queue-link').removeClass('active');
+                $('.models-link').addClass('active');
+                $('.team-link').removeClass('active');
                 this.listenTo(this.collection, 'update', this.updateTable);
             },
 
             renderModelsTable: function() {
                 if (!$.fn.dataTable.isDataTable('#models-table')) {
                     this.$('#models-table').DataTable({
+                        bLengthChange: false,
+                        language: {
+                            searchPlaceholder: 'Search',
+                            sSearch: ''
+                        },
                         columns: [
                             {
                                 title: 'ID',

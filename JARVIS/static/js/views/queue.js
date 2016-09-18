@@ -20,12 +20,20 @@ define([
             },
 
             initialize: function() {
+                $('.queue-link').addClass('active');
+                $('.models-link').removeClass('active');
+                $('.team-link').removeClass('active');
                 this.listenTo(this.collection, 'update', this.updateTable);
             },
 
             renderTaskTable: function() {
                 if (!$.fn.dataTable.isDataTable('#task-table')) {
                     this.$('#task-table').DataTable({
+                        bLengthChange: false,
+                        language: {
+                            searchPlaceholder: 'Search',
+                            sSearch: ''
+                        },
                         columns: [
                             {
                                 title: 'ID',
