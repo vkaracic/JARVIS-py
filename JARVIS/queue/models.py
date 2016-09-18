@@ -60,7 +60,7 @@ class Task(models.Model):
     min_error = models.FloatField(null=True, blank=True)
     iterations = models.PositiveIntegerField(null=True, blank=True)
     status = models.IntegerField(default=0, choices=STATUS_CHOICES)
-    error = models.TextField()
+    error = models.TextField(blank=True, null=True)
 
     class Meta(object):
         ordering = ['created_at', 'priority']

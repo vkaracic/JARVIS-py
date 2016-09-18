@@ -8,5 +8,7 @@ require.config({
         'text': 'node_modules/requirejs-text/text',
         'datatables': 'node_modules/datatables.net/js/jquery.dataTables',
         'underscore.string': 'node_modules/underscore.string/dist/underscore.string',
+        'js-cookie': 'node_modules/js-cookie/src/js.cookie',
+        'backbone.validation': 'node_modules/backbone-validation/dist/backbone-validation-amd',
     },
 });

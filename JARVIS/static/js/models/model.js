@@ -2,7 +2,7 @@ define([
     'backbone.relational'
     ],
     function() {
-        return Backbone.Model.extend({
+        return Backbone.RelationalModel.extend({
             urlRoot: '/api/private/models/',
         });
     }

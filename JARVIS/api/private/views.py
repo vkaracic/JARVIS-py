@@ -87,7 +87,7 @@ class PrivateModelDetailsView(RetrieveUpdateDestroyAPIView, CreateAPIView):
         """Runs an inference with the TFModel and return the results."""
         model = TFModel.objects.get(id=pk, permission_type=0)
         # Must be list of lists
-        input_data = json.loads(request.POST.get('input_data'))
+        input_data = json.loads(request.data.get('input_data'))
         inference = model.infer(input_data)
         return Response(inference)
 
@@ -113,15 +113,15 @@ class PrivateModelTrainView(APIView):
 
     def post(self, request, pk):
         """Runs the training of the TFModel."""
-        err_data = request.POST.get('min_error')
-        iter_data = request.POST.get('iterations')
+        err_data = request.data.get('min_error')
+        iter_data = request.data.get('iterations')
         min_error = float(err_data) if err_data else None
         iterations = int(iter_data) if iter_data else 100000
-        model = TFModel.objects.get(id=pk, permission_type=0)
+        model = TFModel.objects.get(id=pk)
         ext_user = ExtendedUser.objects.get(user=request.user)
 
         if settings.QUEUE:
-            training_data_csv_name = request.POST.get('training_data_csv_name')
+            training_data_csv_name = request.data.get('training_data_csv_name')
             Task.objects.create(
                 model=model,
                 priority=ext_user.priority,
@@ -132,7 +132,7 @@ class PrivateModelTrainView(APIView):
             Queue.objects.first().start_next()
             return Response('Queued!')
         else:
-            training_data = json.loads(request.POST.get('training_data'))
+            training_data = json.loads(request.data.get('training_data'))
             model.train(training_data, min_error, iterations)
 
         return Response('Trained!')

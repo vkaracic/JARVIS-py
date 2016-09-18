@@ -2,6 +2,7 @@ define([
     'backbone',
     'js/views/queue',
     'js/views/models',
+    'js/views/model_details',
     'js/views/new_task',
     'js/views/new_model',
     'js/collections/task_collection',
@@ -9,6 +10,7 @@ define([
 ], function(Backbone,
             QueueList,
             ModelsView,
+            ModelDetailsView,
             NewTaskView,
             NewModelView,
             TaskCollection,
@@ -21,6 +23,7 @@ define([
         routes: {
             'queue': 'queue',
             'models': 'models',
+            'models/:id': 'singleModel',
             'new-task': 'newTask',
             'new-model': 'newModel',
         },
@@ -37,9 +40,12 @@ define([
             view.render();
         },
 
+        singleModel: function(id) {
+            var view = new ModelDetailsView({id: id, el: $('.main-content')});
+        },
+
         newTask: function() {
             var view = new NewTaskView({el: $('.main-content')});
-            view.render();
         },
 
         newModel: function() {

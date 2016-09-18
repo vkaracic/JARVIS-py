@@ -28,7 +28,7 @@ define([
 
             renderTaskTable: function() {
                 if (!$.fn.dataTable.isDataTable('#task-table')) {
-                    this.$('#task-table').DataTable({
+                    var table = this.$('#task-table').DataTable({
                         bLengthChange: false,
                         language: {
                             searchPlaceholder: 'Search',
@@ -60,13 +60,25 @@ define([
                 }
             },
 
+            getStatus: function(num) {
+                if (num === 0) {
+                    return 'WAITING';
+                } else if (num === 1) {
+                    return 'RUNNING';
+                } else if (num === 2) {
+                    return 'DONE';
+                } else if (num === 3) {
+                    return 'ERROR';
+                }
+            },
+
             getTaskData: function(task) {
                 return {
                     id: task.get('id'),
                     model: task.get('model'),
                     priority: task.get('priority'),
                     started_at: task.get('started_at'),
-                    status: task.get('status'),
+                    status: this.getStatus(task.get('status')),
                 };
             },
 

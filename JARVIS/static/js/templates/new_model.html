@@ -1,0 +1,27 @@
+<div class="new-model">
+<h1>NEW MODEL</h1>
+
+<form>
+    <input type="number" name="num_inputs"  placeholder="Number of inputs" required>
+    <input type="text" name="num_hidden"  placeholder="Number of hidden units" required>
+    <input type="number" name="num_outputs"  placeholder="Number of outputs" required>
+    <input type="number" step="0.001" name="learning_rate"  placeholder="Learning rate" required>
+    <select name="cost">
+        <option>MSE</option>
+        <option>ENTROPY</option>
+    </select>
+    <select name="optimizer">
+        <option>GD</option>
+    </select>
+    <select name="activation">
+        <option>SIGM</option>
+        <option>TANH</option>
+    </select>
+    <select name="permission_type">
+        <option>Free use</option>
+        <option>Only me</option>
+        <option>Only my team</option>
+    </select>
+    <button type="submit" class="action-btn new-model-btn">ADD NEW MODEL</button>
+</form>
+</div>

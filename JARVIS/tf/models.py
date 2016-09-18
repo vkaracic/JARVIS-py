@@ -15,7 +15,8 @@ class TFModel(models.Model):
         (1, 'Single user'),
         (2, 'Team')
     )
-    external_id = models.UUIDField(default=uuid.uuid4, unique=True)
+    title = models.CharField(max_length=255, blank=True, null=True)
+    external_id = models.CharField(max_length=8, unique=True, blank=True, null=True)
     file_path = models.FilePathField(blank=True, null=True)
     num_inputs = models.PositiveIntegerField()
     num_outputs = models.PositiveIntegerField()
@@ -32,6 +33,10 @@ class TFModel(models.Model):
     permission_type = models.IntegerField(default=0, choices=PERMISSION_TYPES)
     permitted_user = models.ForeignKey('users.ExtendedUser', blank=True, null=True)
     permitted_team = models.ForeignKey('users.Team', blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.external_id = uuid.uuid4().hex[-8:]
+        super(TFModel, self).save(*args, **kwargs)
 
     def generate_file_path(self):
         """Generate a file path to a new model file.
@@ -177,6 +182,7 @@ class TFModel(models.Model):
         _, x, y, cost, optimizer = self.create_network()
         saver = tf.train.Saver()
         with tf.Session() as sess:
+            results = []
             sess.run(tf.initialize_all_variables())
             if self.trained:
                 saver.restore(sess, self.file_path)
@@ -185,7 +191,9 @@ class TFModel(models.Model):
                     [optimizer, cost],
                     feed_dict={x: inputs, y: outputs}
                 )
-                if i % 5000 == 0:
+                if i % 100 == 0:
+                    results.append(c)
+                if i % 1000 == 0:
                     print '{}, {}'.format(i, c)
                 if min_error and c < min_error:
                     break
@@ -194,7 +202,9 @@ class TFModel(models.Model):
             file_path = self.file_path or self.generate_file_path()
             saver.save(sess, file_path)
             print 'model saved in: ', file_path
-
+            results_model, __ = TrainingResults.objects.get_or_create(model=self.external_id)
+            results_model.results = ','.join(str(result) for result in results)
+            results_model.save()
             if not self.trained:
                 self.file_path = file_path
                 self.trained = True
@@ -216,3 +226,8 @@ class TFModel(models.Model):
             saver.restore(sess, self.file_path)
             output = sess.run(out, feed_dict={x: np_input})
         return output.tolist()
+
+
+class TrainingResults(models.Model):
+    model = models.CharField(max_length=8)
+    results = models.TextField(blank=True, null=True)

@@ -42,6 +42,13 @@ define([
                                 data: 'id',
                             },
                             {
+                                title: 'Hash',
+                                data: 'hash',
+                                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                                    $(nTd).html('<a href="/#models/'+oData.id+'">'+oData.hash+'</a>');
+                                }
+                            },
+                            {
                                 title: 'Structure',
                                 data: 'structure'
                             },
@@ -71,10 +78,12 @@ define([
             },
 
             getModelData: function(model) {
-                var structure;
-                structure = _s.sprintf('%s-%s-%s', model.get('num_inputs'), model.get('num_hidden'), model.get('num_outputs'));
+                var structure = _s.sprintf(
+                    '%s-%s-%s', model.get('num_inputs'), model.get('num_hidden'), model.get('num_outputs')
+                );
                 return {
                     id: model.get('id'),
+                    hash: model.get('external_id'),
                     structure: structure,
                     cost: model.get('cost'),
                     optimizer: model.get('optimizer'),
