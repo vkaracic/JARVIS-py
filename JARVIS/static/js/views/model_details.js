@@ -2,15 +2,20 @@ define([
         'underscore',
         'backbone',
         'js/models/model',
-        'text!js/templates/model_details.html'
-
+        'text!js/templates/model_details.html',
+        'js-cookie'
     ], function(_,
                 Backbone,
                 ModelModel,
-                ModelDetailsTemplate) {
+                ModelDetailsTemplate,
+                Cookie) {
 
     return Backbone.View.extend({
         template: _.template(ModelDetailsTemplate),
+
+        events: {
+            'click .run-inference': 'runInference'
+        },
 
         initialize: function(options) {
             var self = this;
@@ -26,15 +31,17 @@ define([
             $.ajax({
                 url: '/api/results/' + hash + '/',
                 success: function(data) {
-                    var results = [];
-                    var tmp = data.results.split(',');
-                    _.each(tmp, function(item, i) {
-                        results.push({
-                            y: parseFloat(item),
-                            x: i
+                    if (!_.isEmpty(data)) {
+                        var results = [];
+                        var tmp = data.results.split(',');
+                        _.each(tmp, function(item, i) {
+                            results.push({
+                                y: parseFloat(item),
+                                x: i
+                            });
                         });
-                    });
-                    self.drawGraph(results);
+                        self.drawGraph(results);
+                    }
                 }
             });
         },
@@ -43,27 +50,77 @@ define([
             var ctx = $("#training-results");
             var myChart = new Chart(ctx, {
                 type: 'line',
-                    data: {
-                        datasets: [{
-                            label: 'Error Rate',
-                            data: results
+                data: {
+                    datasets: [{
+                        label: 'Error Rate',
+                        data: results
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive:false,
+                    scales: {
+                        xAxes: [{
+                            type: 'linear',
+                            position: 'bottom'
                         }]
                     },
-                    options: {
-                        maintainAspectRatio: false,
-                        responsive:false,
-                        scales: {
-                            xAxes: [{
-                                type: 'linear',
-                                position: 'bottom'
-                            }]
-                        }
-                    }
+                }
+            });
+        },
+
+        updateInferenceResults: function(input, output) {
+            var table = $('.inference-results');
+            table.find('tr').remove();
+            for (var i = 0; i < output.length; i++) {
+                table.append(
+                    '<tr>'+
+                    '<td>'+input.input_data[i]+'</td>'+
+                    '<td>'+output[i]+'</td>'+
+                    '</tr>'
+                );
+            }
+            return this;
+        },
+
+        submitInference: function(data) {
+            var self = this;
+            $.ajax({
+                url: '/api/private/models/' + this.model.id +'/',
+                method: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                headers: {
+                    'X-CSRFToken': Cookie.get('csrftoken')
+                },
+                data: JSON.stringify(data),
+                success: function(res) {
+                    console.log("SUCCESS!");
+                    self.updateInferenceResults(data, res);
+                },
+                error: function() {
+                    console.log('ERROR');
+                }
+            });
+        },
+
+        runInference: function(e) {
+            e.preventDefault();
+
+            var raw_data = this.$('.form-input textarea').val(),
+                input_data = [];
+
+            _.each(raw_data.split('\n'), function(item) {
+                input_data.push(item.split(',').map(function(i) {
+                    return parseInt(i, 10);
+                }));
+            });
+            this.submitInference({
+                input_data: input_data
             });
         },
 
         render: function() {
-            console.log(this.model.attributes);
             this.$el.html(this.template(this.model.attributes));
             this.drawTrainingResults(this.model.get('external_id'));
         }

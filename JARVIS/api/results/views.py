@@ -9,5 +9,8 @@ class ResultsView(APIView):
     serializer = ResultsSerializer
 
     def get(self, request, exid, *args, **kwargs):
-        results = TrainingResults.objects.get(model=exid)
-        return Response(ResultsSerializer(results).data)
+        try:
+            results = TrainingResults.objects.get(model=exid)
+            return Response(ResultsSerializer(results).data)
+        except TrainingResults.DoesNotExist:
+            return Response({})

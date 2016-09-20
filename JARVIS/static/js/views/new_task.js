@@ -48,7 +48,7 @@ define([
                     'X-CSRFToken': Cookie.get('csrftoken')
                 },
                 data: JSON.stringify(data),
-                success: function() {
+                success: function(data) {
                     console.log("SUCCESS!");
                 },
                 error: function() {

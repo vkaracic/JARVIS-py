@@ -87,7 +87,7 @@ class PrivateModelDetailsView(RetrieveUpdateDestroyAPIView, CreateAPIView):
         """Runs an inference with the TFModel and return the results."""
         model = TFModel.objects.get(id=pk, permission_type=0)
         # Must be list of lists
-        input_data = json.loads(request.data.get('input_data'))
+        input_data = request.data.get('input_data')
         inference = model.infer(input_data)
         return Response(inference)
 

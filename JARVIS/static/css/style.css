@@ -279,3 +279,34 @@ html, body,
     font-weight: 500;
     text-transform: uppercase;
 }
+
+.network-info table tr {
+    line-height: 30px;
+}
+
+.error-rate-graph table {
+    width: 600px;
+    margin: 0;
+    margin-top: 20px;
+
+    text-align: center;
+}
+
+.error-rate-graph table tr {
+    line-height: 30px;
+}
+.inference {
+    margin-top: 50px;
+}
+
+.inference .form-input {
+    text-align: center;
+}
+
+.inference textarea {
+    border: 0;
+}
+
+.inference .action-btn {
+    width: 40%;
+}

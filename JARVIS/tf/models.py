@@ -35,7 +35,9 @@ class TFModel(models.Model):
     permitted_team = models.ForeignKey('users.Team', blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        self.external_id = uuid.uuid4().hex[-8:]
+        """Generate a new hex value for the external_id field."""
+        if not self.external_id:
+            self.external_id = uuid.uuid4().hex[-8:]
         super(TFModel, self).save(*args, **kwargs)
 
     def generate_file_path(self):
@@ -62,7 +64,7 @@ class TFModel(models.Model):
         Args:
             layer (tensor): layer to which to assign the activation function.
 
-        Returns
+        Returns:
             The activation function.
         """
         if self.activation == 'SIGM':
