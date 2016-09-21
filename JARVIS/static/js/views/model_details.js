@@ -112,7 +112,7 @@ define([
 
             _.each(raw_data.split('\n'), function(item) {
                 input_data.push(item.split(',').map(function(i) {
-                    return parseInt(i, 10);
+                    return parseFloat(i);
                 }));
             });
             this.submitInference({
