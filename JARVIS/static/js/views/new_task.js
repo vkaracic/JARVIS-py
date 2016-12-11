@@ -18,8 +18,8 @@ define([
             'click .new-task-btn': 'addTask'
         },
 
-        getModel: function(hex) {
-            return this.collection.where({'external_id': hex})[0];
+        getModel: function(title) {
+            return this.collection.where({'title': title})[0];
         },
 
         addTask: function(e) {
@@ -68,7 +68,7 @@ define([
         render: function() {
             this.$el.html(this.template);
             _.each(this.collection.models, function(item) {
-                var option = _s.sprintf('<option>%s</option', item.get('external_id'));
+                var option = _s.sprintf('<option>%s</option', item.get('title'));
                 this.$('select[name=model]').append(option);
             });
         }

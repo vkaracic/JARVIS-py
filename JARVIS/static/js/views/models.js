@@ -42,6 +42,10 @@ define([
                                 data: 'id',
                             },
                             {
+                                title: 'Title',
+                                data: 'title',
+                            },
+                            {
                                 title: 'Hash',
                                 data: 'hash',
                                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
@@ -83,6 +87,7 @@ define([
                 );
                 return {
                     id: model.get('id'),
+                    title: model.get('title'),
                     hash: model.get('external_id'),
                     structure: structure,
                     cost: model.get('cost'),

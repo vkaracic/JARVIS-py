@@ -22,6 +22,7 @@ define([
             e.preventDefault();
             this.$('.new-model-btn').attr('disabled', true);
             var data = {
+                'title': this.$('[name=title]').val(),
                 'num_inputs': this.$('[name=num_inputs]').val(),
                 'num_hidden': this.$('[name=num_hidden]').val(),
                 'num_outputs': this.$('[name=num_outputs]').val(),
