@@ -145,7 +145,7 @@ class TFModel(models.Model):
             'out': tf.Variable(tf.random_normal([hidden[-1], self.num_outputs]))
         }
         biases = {
-            'in': tf.Variable(tf.random_normal([hidden[0]])),
+            'in': tf.Variable(tf.random_normal([hidden[0 ]])),
             'out': tf.Variable(tf.random_normal([self.num_outputs]))
         }
 
@@ -201,6 +201,7 @@ class TFModel(models.Model):
                     break
 
             self.latest_cost = c
+            self.save()
             file_path = self.file_path or self.generate_file_path()
             saver.save(sess, file_path)
             print 'model saved in: ', file_path

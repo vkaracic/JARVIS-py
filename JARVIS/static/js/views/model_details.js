@@ -122,6 +122,13 @@ define([
 
         render: function() {
             this.$el.html(this.template(this.model.attributes));
+            if (this.model.get('permission_type') === 0) {
+                $('.permission-type').text('Free use');
+            } else if (this.model.get('permission_type') === 1) {
+                $('.permission-type').text('Only me');
+            } else {
+                $('.permission-type').text('Only my team');
+            }
             this.drawTrainingResults(this.model.get('external_id'));
         }
     });
